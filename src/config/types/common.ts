@@ -10,3 +10,11 @@ export interface I_SidebarItem {
   path: string;
   icon: string
 }
+
+export interface I_MapProductStatus {
+  [key: string]: {
+    name: string;
+    color: string;
+    status: number
+  }
+}

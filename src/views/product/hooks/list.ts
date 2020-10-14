@@ -14,6 +14,13 @@ export const useListTableColumns = () => {
       slots: { customRender: 'name' }
     },
     {
+      title: '状态',
+      key: 'status',
+      dataIndex: 'status',
+      width: 100,
+      slots: { customRender: 'status' }
+    },
+    {
       title: '所属组织',
       key: 'organization',
       dataIndex: 'organization',
@@ -30,6 +37,12 @@ export const useListTableColumns = () => {
       key: 'created_at',
       dataIndex: 'created_at',
       slot: { customRender: 'created_at' }
+    },
+    {
+      title: '操作',
+      key: 'control',
+      dataIndex: 'control',
+      slot: { customRender: 'control' }
     }
   ]);
 
