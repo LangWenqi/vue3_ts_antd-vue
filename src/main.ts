@@ -1,7 +1,13 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import './registerServiceWorker'
-import router from './router'
-import store from './store'
+import { createApp, App } from 'vue';
+import AppComponent from './App.vue';
+import './registerServiceWorker';
+import { VuePluginClass } from '@/plugin';
+import { RouterGuardClass } from '@/router/guard';
+import './styles/style';
 
-createApp(App).use(store).use(router).mount('#app')
+const app: App = createApp(AppComponent);
+
+VuePluginClass.getInstance(app).usePlugins();
+RouterGuardClass.getInstance().beforeEach();
+
+app.mount('#app');

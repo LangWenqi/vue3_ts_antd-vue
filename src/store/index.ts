@@ -1,12 +1,12 @@
-import { createStore } from 'vuex'
+import { createStore, StoreOptions } from 'vuex';
+import { RootState } from './types';
+import { common } from './common';
+import { CommonModuleName } from './common/constants';
 
-export default createStore({
-  state: {
-  },
-  mutations: {
-  },
-  actions: {
-  },
+const store: StoreOptions<RootState> = {
   modules: {
+    [CommonModuleName]: common
   }
-})
+}
+
+export default createStore<RootState>(store)
