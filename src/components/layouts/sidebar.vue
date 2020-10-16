@@ -3,27 +3,32 @@
   <a-layout-sider
     class="height-vh-100 overflow--auto--hide-scrollbar"
     breakpoint="lg"
-    v-model:collapsed="collapsed"
+    :collapsed="collapsed"
   >
-    <div class="logo" />
-    <a-menu theme="dark" mode="inline" :selectedKeys="[currentPath]" @click="changeMenuRoute">
-      <a-menu-item :key="menuItem.path" v-for="menuItem in menuList">
-        <component :is="menuItem.icon"></component>
-        <span class="nav-text">{{menuItem.name}}</span>
-      </a-menu-item>
-    </a-menu>
+    <div class="sidebar__title padding-left-16" flex="cross:center">
+      <span class="color-white font-22"><CodepenOutlined class="margin-right-12" />产品中心</span>
+    </div>
+    <div class="sidebar__list overflow--auto--hide-scrollbar">
+      <a-menu theme="dark" mode="inline" :selectedKeys="[currentPath]" @click="changeMenuRoute">
+        <a-menu-item :key="menuItem.path" v-for="menuItem in menuList">
+          <component :is="menuItem.icon"></component>
+          <span class="nav-text">{{menuItem.name}}</span>
+        </a-menu-item>
+      </a-menu>
+    </div>
   </a-layout-sider>
 </template>
 
 <script lang="ts">
 
 import { defineComponent } from 'vue';
-import { AppstoreOutlined } from '@ant-design/icons-vue';
+import { CodepenOutlined, AppstoreOutlined } from '@ant-design/icons-vue';
 import { useCollapsed, useMenuList, useSelectRoute } from '../hooks/layouts/sidebar';
 
 export default defineComponent({
   name: 'SideBar',
   components: {
+    CodepenOutlined,
     AppstoreOutlined  
   },
   setup () {
@@ -49,5 +54,10 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
- 
+.sidebar__list {
+  height: calc(100vh - 50px);
+}
+.sidebar__title {
+  height: 50px;
+}
 </style>

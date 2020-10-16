@@ -19,9 +19,11 @@ export interface I_ProductItem_Organization {
 }
 
 export interface I_ProductItem_RoleList {
-  product_admin: Array<{
-    username: string;
-    nickname: string;
-  }>;
+  product_admin: I_ProductItem_RoleList_ProductAdminItem[];
   [key: string]: any;
+}
+
+export interface I_ProductItem_RoleList_ProductAdminItem {
+  username: string;
+  nickname: string;
 }

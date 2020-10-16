@@ -1,8 +1,8 @@
 <template>
   <div class="padding-all-24">
     <a-table
-      rowKey="id"
       size="middle"
+      rowKey="id"
       :columns="columns"
       :loading="loading"
       :data-source="productList"
@@ -16,7 +16,7 @@
       }"
     >
       <template v-slot:name="{ record }">
-        <div flex>
+        <div flex :style="{minWidth: minWidth}">
           <a-avatar class="border-radius-4" :size="48" shape="square" :src="record.icon"></a-avatar>
           <div class="margin-left-12">
             <div>{{record.name}}</div>
@@ -26,29 +26,28 @@
       </template>
       <template v-slot:status="{ record }">
         <div>
-          {{getStatus(record)}}
           <a-tag :color="getStatus(record).color">
               {{getStatus(record).name}}
           </a-tag> 
         </div>
       </template>
       <template v-slot:organization="{ record }">
-        <div>
-          {{record?.organization?.name || '-'}}
+        <div :style="{minWidth: minWidth}">
+          {{record.organization?.name || '-'}}
         </div>
       </template>
       <template v-slot:admin="{ record }">
-        <div>
+        <div :style="{minWidth: minWidth}">
           {{getAdmins(record)}}
         </div>
       </template>
-      <template v-slot:create_at="{ record }">
-        <div>
+      <template v-slot:created_at="{ record }">
+        <div :style="{minWidth: minWidth}">
           {{getCreateAt(record)}}
         </div>
       </template>
-       <template v-slot:control="{ record }">
-        <div>
+      <template v-slot:control="{ record }">
+        <div class="ant-btn-no-padding-left" :style="{minWidth: minWidth}">
           <a-button type="link" v-if="isShowApply(record)">申请权限</a-button>
           <a-button type="link" v-if="isShowEdit(record)">编辑</a-button>
           <a-button type="link" v-if="isShowDelete(record)">删除</a-button>
@@ -64,7 +63,9 @@
 import { defineComponent } from 'vue';
 import { useInjectProductListData } from '../../hooks/list';
 import { mapProductStatus } from '@/config/maps/common';
-import { I_ProductItem } from '../../types/list';
+import { I_ProductItem, I_ProductItem_RoleList_ProductAdminItem } from '../../types/list/listTable';
+
+const minWidth = '80px';
 
 export default defineComponent({
   name: 'ListTable',
@@ -93,7 +94,7 @@ export default defineComponent({
 
     const getAdmins = (record: I_ProductItem) => {
       if (record.role_list && Array.isArray(record.role_list.product_admin)) {
-        return record.role_list.product_admin.join('、');
+        return record.role_list.product_admin.map((item: I_ProductItem_RoleList_ProductAdminItem) => item.nickname).join('、');
       } else {
         return '-';
       }
@@ -107,8 +108,9 @@ export default defineComponent({
     const isShowEdit = (record: I_ProductItem) => (record.privilege === 1);
     const isShowDelete = (record: I_ProductItem) => (record.status === -1 && record.privilege === 1);
     const isShowDetail = (record: I_ProductItem) => (record.status === -1 && (record.privilege === 1 || record.privilege === 2));
-
+    
     return {
+      minWidth,
       curpage,
       perpage,
       rcount,

@@ -17,6 +17,7 @@ export const useCollapsed = () => {
   }
 
   watchEffect((onInvalidate) => {
+    resizeCallBack();
     window.addEventListener('resize', resizeCallBack);
     onInvalidate(() => {
       window.removeEventListener('resize', resizeCallBack);
