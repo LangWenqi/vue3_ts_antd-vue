@@ -194,6 +194,9 @@ textarea {
 .font-24 {
   font-size: $font-24;
 }
+.font-weight {
+  font-weight: bold;
+}
 /******* color *******/
 .color-primary {
   color: $color-primary;
@@ -269,6 +272,9 @@ textarea {
 .overflow {
   &--hidden {
     overflow: hidden;
+  }
+  &--hidden--nowrap {
+    @include ellipsis(1)
   }
   &--auto {
     overflow: auto;

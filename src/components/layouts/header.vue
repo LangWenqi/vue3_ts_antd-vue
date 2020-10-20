@@ -59,7 +59,6 @@ export default defineComponent({
     const helpUrl = ref(HELP_URL);
 
     const { commonState, handleCollapsed } = useInject(commonSymbol);
-
     const collapsed = computed(() => (commonState.collapsed));
 
     const avatarUrl = computed(() => (commonState.basicInfo.user.picture));

@@ -4,7 +4,26 @@ export interface I_CommonInject extends I_CommonActions{
 }
 export interface I_CommonState {
   collapsed: boolean;
-  basicInfo: I_BasicInfo
+  basicInfo: I_BasicInfo;
+  channel: {
+    [key: string]: string
+  };
+  charge_mode: {
+    [key: string]: string
+  };
+  platform_channel: {
+    [key: string]: {
+      [key: string]: string
+    }
+  };
+  product_type: {
+    [key: string]: string
+  };
+  role_product: I_RoleItem[];
+  role_total: I_RoleItem[];
+  service_framework: {
+    [key: string]: string
+  }
 }
 
 type I_CommonActions = typeof actions
@@ -36,4 +55,11 @@ export interface I_BasicInfo_User_Company{
   manage_ranks: string;
   professional_position: string;
   professional_ranks: string;
+}
+
+export interface I_RoleItem {
+  description: string;
+  id: number;
+  key: string;
+  name: string;
 }

@@ -14,10 +14,10 @@ export class RouterGuardClass {
   beforeEach () {
     router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
       console.log('routerBreforeEach', to, from);
-      const { commonState, handleBasicInfo } = GetCommonInject()
+      const { commonState, handleBasicInfo, handleProductMap } = GetCommonInject()
 
       if (!commonState.basicInfo.user.username) {
-        await handleBasicInfo();
+        await Promise.all([handleBasicInfo(), handleProductMap()]);
       }
       next();
     });

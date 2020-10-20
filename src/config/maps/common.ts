@@ -214,5 +214,4 @@ export const accountMap = {
   pt33: '边锋33体系（BF33）',
   other: '其它'
 }
-export const TextMaxLength = 100;
-export const InputMaxLength = 50;
+

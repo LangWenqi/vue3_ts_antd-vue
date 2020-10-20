@@ -16,10 +16,12 @@ export const useListParams = () => {
 
   const productParams = reactive<I_GetProductList_Params>(deepClone(staticProduuctParams));
   
-  const resetProductParams = () => {
+  const resetProductParams = (filterArrs: string[] = []) => {
     Object.keys(staticProduuctParams).forEach((key: string) => {
       const paramsKey = key as keyof I_GetProductList_Params;
-      (productParams as any)[paramsKey] = typeof staticProduuctParams[paramsKey] === 'object' ? deepClone(staticProduuctParams[paramsKey]) : staticProduuctParams[paramsKey];
+      if (!filterArrs.includes(key)) {
+        (productParams as any)[paramsKey] = typeof staticProduuctParams[paramsKey] === 'object' ? deepClone(staticProduuctParams[paramsKey]) : staticProduuctParams[paramsKey];
+      }
     })
   }
 

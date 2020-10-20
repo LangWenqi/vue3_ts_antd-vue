@@ -48,13 +48,15 @@
       </template>
       <template v-slot:control="{ record }">
         <div class="ant-btn-no-padding-left" :style="{minWidth: minWidth}">
-          <a-button type="link" v-if="isShowApply(record)">申请权限</a-button>
-          <a-button type="link" v-if="isShowEdit(record)">编辑</a-button>
+          <a-button type="link" v-if="isShowApply(record)" @click="handleApplyProductModal(true, record)">申请权限</a-button>
+          <a-button type="link" v-if="isShowEdit(record)" @click="handleEditProductModal(true, record)">编辑</a-button>
           <a-button type="link" v-if="isShowDelete(record)">删除</a-button>
           <a-button type="link" v-if="isShowDetail(record)">详情</a-button>
         </div>
       </template>
     </a-table>
+    <apply-product-modal v-if="applyProductVisible" :modal-data="applyProductData" v-model:visible="applyProductVisible"></apply-product-modal>
+    <edit-product-modal v-if="editProductVisible" :modal-data="editProductData" v-model:visible="editProductVisible"></edit-product-modal>
   </div>
 </template>
 
@@ -62,14 +64,21 @@
 
 import { defineComponent } from 'vue';
 import { useInjectProductListData } from '../../hooks/list';
+import { useApplyProductVisible } from '../../hooks/modal/applyProduct';
+import { useEditProductVisible } from '../../hooks/modal/editProduct';
 import { mapProductStatus } from '@/config/maps/common';
-import { I_ProductItem, I_ProductItem_RoleList_ProductAdminItem } from '../../types/list/listTable';
+import { I_ProductItem } from '../../types/list/listTable';
+import { I_User } from '@/apis/common/types';
+import applyProductModal from '../modal/applyProductModal.vue';
+import editProductModal from '../modal/editProductModel.vue';
 
 const minWidth = '80px';
 
 export default defineComponent({
   name: 'ListTable',
   components: {
+    applyProductModal,
+    editProductModal
   },
   setup () {
 
@@ -92,14 +101,23 @@ export default defineComponent({
       }
     }
 
-    const getAdmins = (record: I_ProductItem) => {
-      if (record.role_list && Array.isArray(record.role_list.product_admin)) {
-        return record.role_list.product_admin.map((item: I_ProductItem_RoleList_ProductAdminItem) => item.nickname).join('、');
-      } else {
-        return '-';
-      }
+    const getAdminArr = (record: I_ProductItem) => {
+      return record.role_list && Array.isArray(record.role_list.product_admin) ? record.role_list.product_admin : [];
     }
 
+    const getAdmins = (record: I_ProductItem) => {
+      const arr = getAdminArr(record);
+      return arr.length > 0 ? arr.map((item: I_User) => item.nickname).join('、') : '-'
+    }
+
+    const getAdminIds = (record: I_ProductItem) => {
+      const arr = getAdminArr(record);
+      return arr.length > 0 ? arr.map((item: I_User) => item.username) : [];
+    }
+
+    const getOrganizations = (record: I_ProductItem) => {
+      return record.organization && record.organization.id ? [record.organization] : [];
+    }
     const getCreateAt = (record: I_ProductItem) => {
       return record.created_at?.split(' ')[0] || '-';
     }
@@ -108,7 +126,44 @@ export default defineComponent({
     const isShowEdit = (record: I_ProductItem) => (record.privilege === 1);
     const isShowDelete = (record: I_ProductItem) => (record.status === -1 && record.privilege === 1);
     const isShowDetail = (record: I_ProductItem) => (record.status === -1 && (record.privilege === 1 || record.privilege === 2));
+
+    const {
+      applyProductVisible,
+      applyProductData,
+      handleApplyProductVisible,
+      handleApplyProductData
+    } = useApplyProductVisible();
+
+    const handleApplyProductModal = (visible: boolean, record: I_ProductItem) => {
+      handleApplyProductData({
+        pro_id: record.id,
+        role_id: undefined,
+        product_name: record.name,
+        apply_desc: ''
+      });
+      handleApplyProductVisible(visible);
+    }
     
+    const {
+      editProductVisible,
+      editProductData,
+      handleEditProductVisible,
+      handleEditProductData
+    } = useEditProductVisible();
+
+    const handleEditProductModal = (visible: boolean, record: I_ProductItem) => {
+      handleEditProductData({
+        product_id: record.id,
+        icon: record.icon,
+        name: record.name,
+        organization: record.organization?.id,
+        product_admin: getAdminIds(record),
+        adminList: getAdminArr(record),
+        organizationList: getOrganizations(record)
+      });
+      handleEditProductVisible(visible);
+    }
+
     return {
       minWidth,
       curpage,
@@ -124,7 +179,15 @@ export default defineComponent({
       isShowApply,
       isShowEdit,
       isShowDelete,
-      isShowDetail
+      isShowDetail,
+      handleApplyProductModal,
+      applyProductVisible,
+      applyProductData,
+      editProductVisible,
+      editProductData,
+      handleEditProductVisible,
+      handleEditProductData,
+      handleEditProductModal
     }
   }
 })

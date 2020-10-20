@@ -1,7 +1,8 @@
 
 import { reactive, readonly } from 'vue';
 import { I_CommonInject, I_CommonState, I_BasicInfo } from './types';
-import { getBasicInfo } from '@/apis/common';
+import { getBasicInfo, getMapProduct } from '@/apis/common';
+import { I_GetMapProduct_Type } from '@/apis/common/types';
 import { deepClone } from '@/utils/object';
 
 const staticBasicInfo: I_BasicInfo = {
@@ -30,7 +31,14 @@ const staticBasicInfo: I_BasicInfo = {
 /** 此方法构建是为了在路由中调用（同vuex）**/
 const state: I_CommonState = reactive({
   collapsed: false,
-  basicInfo: deepClone(staticBasicInfo)
+  basicInfo: deepClone(staticBasicInfo),
+  channel: {},
+  charge_mode: {},
+  platform_channel: {},
+  product_type: {},
+  role_product: [],
+  role_total: [],
+  service_framework: {}
 });
 
 export const actions = {
@@ -44,12 +52,23 @@ export const actions = {
         resolve(state.basicInfo);
       })
     })
+  },
+  handleProductMap: () => {
+    return new Promise((resolve) => {
+      const typeArr: I_GetMapProduct_Type[] = ['service_framework', 'charge_mode', 'product_type', 'channel', 'platform_channel', 'role_product', 'role_total'];
+      getMapProduct({ type: typeArr }).then((data) => {
+        typeArr.forEach((type: I_GetMapProduct_Type) => {
+          (state as any)[type] = (data as any)[type] ? (data as any)[type] : (Array.isArray((data as any)[type]) ? [] : {});
+        })
+        resolve();
+      })
+    })
   }
 }
 
 export const GetCommonInject = (): I_CommonInject => {
   return {
-    commonState: readonly(state),
+    commonState: readonly<any>(state),
     ...actions
   }
 }

@@ -1,3 +1,4 @@
+import { I_Organization, I_User } from '@/apis/common/types';
 export interface I_ProductItem {
   created_at: string;
   creator: string;
@@ -9,21 +10,12 @@ export interface I_ProductItem {
   privilege: number;
   status: number;
   role_list: I_ProductItem_RoleList;
-  organization: I_ProductItem_Organization;
+  organization: I_Organization;
   [key: string]: any;
-}
-
-export interface I_ProductItem_Organization {
-  id: string;
-  name: string;
 }
 
 export interface I_ProductItem_RoleList {
-  product_admin: I_ProductItem_RoleList_ProductAdminItem[];
+  product_admin: I_User[];
   [key: string]: any;
 }
 
-export interface I_ProductItem_RoleList_ProductAdminItem {
-  username: string;
-  nickname: string;
-}

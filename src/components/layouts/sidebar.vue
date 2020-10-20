@@ -5,8 +5,9 @@
     breakpoint="lg"
     :collapsed="collapsed"
   >
-    <div class="sidebar__title padding-left-16" flex="cross:center">
-      <span class="color-white font-22"><CodepenOutlined class="margin-right-12" />产品中心</span>
+    <div class="sidebar__title padding-left-16 color-white font-22" :flex="`cross:center main:${collapsed ? 'center' : 'left'}`">
+      <CodepenOutlined class="margin-right-12" />
+      <span v-show="!collapsed" class="overflow--hidden--nowrap">产品中心</span>
     </div>
     <div class="sidebar__list overflow--auto--hide-scrollbar">
       <a-menu theme="dark" mode="inline" :selectedKeys="[currentPath]" @click="changeMenuRoute">

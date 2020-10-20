@@ -1,10 +1,27 @@
 import Http from '@/utils/request';
-import { I_GetProductList } from './types';
+import { I_GetProductList, I_EditProduct_Params } from './types';
 
 // 获取产品列表
-export function getProductList (params: I_GetProductList) {
+export const getProductList = (params: I_GetProductList) => {
   return Http({
     url: '/product/list',
     data: params
+  });
+}
+// 产品编辑
+export const editProduct = (params: I_EditProduct_Params) => {
+  return Http({
+    url: '/product/update',
+    data: params,
+    method: 'post',
+  });
+}
+
+// 产品添加
+export const addProduct = (params: I_EditProduct_Params) => {
+  return Http({
+    url: '/product/add',
+    data: params,
+    method: 'post',
   });
 }

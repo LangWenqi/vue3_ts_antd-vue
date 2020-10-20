@@ -1,13 +1,8 @@
 import { ref, watchEffect } from 'vue';
 import { getSearchUsers, getSearchOrganization } from '@/apis/common';
-
+import { I_Organization, I_User } from '@/apis/common/types';
 export interface I_searchUsersMap {
   [key: string]: string;
-}
-
-export interface I_SearchUser {
-  nickname: string;
-  username: string;
 }
 
 export const useSearchUsers = (delay?: number) => {
@@ -20,18 +15,26 @@ export const useSearchUsers = (delay?: number) => {
 
   const searchUserMap = ref<I_searchUsersMap>({});
 
-  const searchUserList = ref<I_SearchUser[]>([]);
+  const searchUserList = ref<I_User[]>([]);
 
   const userLoading = ref<boolean>(false);
 
   let timer: ReturnType<typeof setTimeout>;
 
+  const handleSearchUserDataMap = (data: I_searchUsersMap) => {
+    searchUserMap.value = data || {};
+  }
+
+  const handleSearchUserDataList = (data: I_User[]) => {
+    searchUserList.value = data;
+  }
+
   const fetchSearchUserList = async (name: string) => {
     userLoading.value = true;
     const data: I_searchUsersMap = await getSearchUsers({ name }) as I_searchUsersMap;
     userLoading.value = false;
-    searchUserMap.value = data as I_searchUsersMap || {};
-    searchUserList.value = Object.keys(searchUserMap.value).map((username: string) => ({ username, nickname: searchUserMap.value[username] }));
+    handleSearchUserDataMap(data);
+    handleSearchUserDataList(Object.keys(data).map((username: string) => ({ username, nickname: data[username] })));
   }
 
   watchEffect((onInvalidate) => {
@@ -53,16 +56,14 @@ export const useSearchUsers = (delay?: number) => {
     searchUserList,
     userLoading,
     handleSearchUsers,
-    fetchSearchUserList
+    fetchSearchUserList,
+    handleSearchUserDataMap,
+    handleSearchUserDataList
   }
 }
 
 export interface I_searchOrganizationMap {
   [key: string]: string;
-}
-export interface I_SearchOrganization {
-  name: string;
-  id: string;
 }
 
 export const useSearchOrganization = (delay?: number) => {
@@ -75,18 +76,26 @@ export const useSearchOrganization = (delay?: number) => {
 
   const searchOrganizationMap = ref<I_searchOrganizationMap>({});
 
-  const searcOrganizationList = ref<I_SearchOrganization[]>([]);
+  const searcOrganizationList = ref<I_Organization[]>([]);
 
   const organizationLoading = ref<boolean>(false);
 
   let timer: ReturnType<typeof setTimeout>;
 
+  const handleSearchOrganizationDataList = (data: I_Organization[]) => {
+    searcOrganizationList.value = data;
+  }
+
+  const handleSearchOrganizationDataMap = (data: I_searchOrganizationMap) => {
+    searchOrganizationMap.value = data as I_searchOrganizationMap || {};
+  }
+
   const fetchSearchOrganization = async (name: string) => {
     organizationLoading.value = true;
     const data: I_searchOrganizationMap = await getSearchOrganization({ name }) as I_searchOrganizationMap;
     organizationLoading.value = false;
-    searchOrganizationMap.value = data as I_searchOrganizationMap || {};
-    searcOrganizationList.value = Object.keys(searchOrganizationMap.value).map((id: string) => ({ id, name: searchOrganizationMap.value[id] }));
+    handleSearchOrganizationDataMap(data);
+    handleSearchOrganizationDataList(Object.keys(data).map((id: string) => ({ id, name:data[id] })));
   }
 
   watchEffect((onInvalidate) => {
@@ -107,6 +116,9 @@ export const useSearchOrganization = (delay?: number) => {
     searchOrganizationMap,
     searcOrganizationList,
     organizationLoading,
-    handleSearchOrganization
+    handleSearchOrganization,
+    fetchSearchOrganization,
+    handleSearchOrganizationDataMap,
+    handleSearchOrganizationDataList
   }
 }
