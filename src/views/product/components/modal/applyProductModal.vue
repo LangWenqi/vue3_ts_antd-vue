@@ -109,6 +109,7 @@ export default defineComponent({
           apply_desc: formData.apply_desc
         }
         postApplyProdcut(params).then(() => {
+          context.emit('refresh');
           onCancel();
         })
       });

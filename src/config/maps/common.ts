@@ -215,3 +215,6 @@ export const accountMap = {
   other: '其它'
 }
 
+export const areaIdDes = '账号[areaid] : 是用户与系统建立的一种联系，是用户从现实映射到虚拟系统中的唯一识别标记，账号体系则是系统下所有账号的集合。';
+
+export const groupIdDes = '部署服务组[groupid]: 部署服务组是边锋33体系下，用于聚合管理cp内容(子游戏 [gameid])的维度标识。一个服务组下可挂载多个账号体系的cp内容（子游戏 [gameid]）。';

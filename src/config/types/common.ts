@@ -18,3 +18,12 @@ export interface I_MapProductStatus {
     status: number
   }
 }
+export interface I_Organization {
+  name: string;
+  id: string
+}
+
+export interface I_User {
+  username: string;
+  nickname: string
+}

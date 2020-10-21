@@ -2,7 +2,7 @@
   <div>
     <a-modal
       :visible="visible"
-      :title="'title'"
+      :title="modalTitle"
       ok-text="确认"
       cancel-text="取消"
       @ok="onConfirm"
@@ -12,6 +12,36 @@
         :label-col="formLabelCol"
         :wrapper-col="formWrapperCol"
       >
+        <a-form-item label="产品图标" v-bind="validateInfos.icon">
+          <a-upload
+            name="data"
+            :action="uploadUrl"
+            list-type="picture-card"
+            :show-upload-list="false"
+            @change="handleChangeFile"
+            @beforeUpload="beforeUpload"
+          >
+            <div class="upload-img" v-if="formData.icon && !fileLoading">
+              <img :src="formData.icon">
+            </div>
+            <div v-else>
+              <LoadingOutlined v-if="fileLoading"/>
+              <PlusOutlined v-else/>
+              <div>{{fileLoading ? '图片上传中' : '上传图片'}}</div>
+            </div>
+          </a-upload>
+        </a-form-item>
+        <a-form-item label="产品名称" v-bind="validateInfos.name">
+          <a-input v-model:value="formData.name" allowClear placeholder="请输入产品名称"></a-input>
+        </a-form-item>
+        <a-form-item label="产品简介">
+          <a-textarea
+            v-model:value="formData.description"
+            placeholder="请输入产品简介"
+            :auto-size="{ minRows: 2, maxRows: 5 }"
+            allowClear
+          />
+        </a-form-item>
         <a-form-item label="所属组织" v-bind="validateInfos.organization">
           <a-select
             show-search
@@ -20,10 +50,8 @@
             placeholder="请选择所属组织"
             :filter-option="false"
             :default-active-first-option="true"
-            :show-arrow="false"
             :not-found-content="organizationLoading ? undefined : null"
             @search="handleSearchOrganization"
-            allowClear
           >
             <template v-if="organizationLoading" v-slot:notFoundContent>
               <a-spin size="small" />
@@ -60,19 +88,24 @@
 
 <script lang="ts">
 
-import { defineComponent, PropType, reactive, computed } from 'vue';
+import { defineComponent, PropType, reactive, ref, computed } from 'vue';
 import { useForm } from '@ant-design-vue/use';
 import { useEditProductRules } from '../../hooks/modal/editProduct';
 import { I_EditProductParams, I_EditProductData } from '../../types/modal/editProductModal';
 import { useInject } from '@/inject';
 import { commonSymbol } from '@/inject/constants';
 import { useSearchUsers, useSearchOrganization } from '@/config/hooks/common';
-// import { DownOutlined, UpOutlined } from '@ant-design/icons-vue';
+import { editProduct, addProduct } from '@/apis/product';
+import { uploadUrl } from '@/apis/file/upload';
+import { PlusOutlined, LoadingOutlined } from '@ant-design/icons-vue';
+import { message } from 'ant-design-vue';
 import { formLabelCol, formWrapperCol } from '@/config/maps/layout';
 
 export default defineComponent({
   name: 'applyProductModal',
   components: {
+    PlusOutlined,
+    LoadingOutlined
   },
   props: {
     visible: {
@@ -87,6 +120,7 @@ export default defineComponent({
         organization: undefined,
         product_admin: [],
         product_id: undefined,
+        description: '',
         adminList: [],
         organizationList: []
       })
@@ -96,6 +130,7 @@ export default defineComponent({
 
     const { commonState } = useInject(commonSymbol);
     const username = computed<string>(() => commonState.basicInfo.user.username);
+    const nickname = computed<string>(() => commonState.basicInfo.user.name);
 
     const { handleSearchUsers, userLoading, searchUserList, handleSearchUserDataList } = useSearchUsers();
     const { searcOrganizationList, organizationLoading, handleSearchOrganization, handleSearchOrganizationDataList } = useSearchOrganization();
@@ -107,17 +142,24 @@ export default defineComponent({
       name: '',
       organization: undefined,
       product_admin: [],
-      product_id: undefined
+      product_id: undefined,
+      description: ''
     })
+    const productId = computed<number | undefined>(() => (props.modalData as I_EditProductData).product_id);
+
+    const modalTitle = computed<string>(() => productId.value ? '编辑产品' : '申请创建产品');
 
     const initFormData = () => {
       Object.keys(formData).forEach((key: string) => {
         (formData as any)[key] = (props.modalData as any)[key];
-      })
+      });
+      if (!productId.value) {
+        formData.product_admin = [username.value];
+      }
     }
 
     initFormData();
-    handleSearchUserDataList((props.modalData as I_EditProductData).adminList);
+    handleSearchUserDataList(productId.value ? (props.modalData as I_EditProductData).adminList : [{ username: username.value, nickname: nickname.value }]);
     handleSearchOrganizationDataList((props.modalData as I_EditProductData).organizationList);
 
     const { resetFields, validate, validateInfos } = useForm(formData, rules);
@@ -129,21 +171,59 @@ export default defineComponent({
     
     const onConfirm = () => {
       validate().then(async () => {
-        // const params = {
-        //   pro_id: formData.pro_id,
-        //   role_id: formData.role_id as number,
-        //   apply_desc: formData.apply_desc
-        // }
-        // postApplyProdcut(params).then(() => {
-        //   onCancel();
-        // })
+        const requestFuc = productId.value ? editProduct : addProduct;
+        const params = {
+          ...formData,
+          organization: searcOrganizationList.value[0]
+        }
+        requestFuc(params).then(() => {
+          context.emit('refresh');
+          onCancel();
+        })
       });
     }
+    const beforeUpload = (file: File) => {
+      const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+      if (!isJpgOrPng) {
+        message.error('只能上传类型JPG/PNG的图片!');
+        return false;
+      }
+      const isLt2M = file.size / 1024 / 1024 < 2;
+      if (!isLt2M) {
+        message.error('上传图片大小不能超过2MB');
+        return false;
+      }
+      return true;
+    }
+    const fileLoading = ref<boolean>(false);
 
+    const handleChangeFile = (info: any) => {
+      if (info.file.status === 'error') {
+        fileLoading.value = false;
+        message.error('上传图标出错！');
+        return;
+      }
+      if (info.file.status === 'uploading') {
+        fileLoading.value = true;
+        return;
+      }
+      if (info.file.status === 'done') {
+        fileLoading.value = false;
+        if (info.file.response) {
+          message.success('上传成功！');
+        } else {
+          message.error('上传图标出错！');
+        }
+        formData.icon = info.file.response.url || info.file.thumbUrl || '';
+      }
+    }
+    
     return {
+      uploadUrl,
       formLabelCol,
       formWrapperCol,
       validateInfos,
+      modalTitle,
       formData,
       onCancel,
       onConfirm,
@@ -153,7 +233,10 @@ export default defineComponent({
       searchUserList,
       searcOrganizationList,
       organizationLoading,
-      handleSearchOrganization
+      handleSearchOrganization,
+      beforeUpload,
+      handleChangeFile,
+      fileLoading
     }
   }
 })

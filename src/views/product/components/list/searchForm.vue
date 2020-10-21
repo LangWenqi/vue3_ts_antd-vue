@@ -42,7 +42,6 @@
               placeholder="请选择所属组织"
               :filter-option="false"
               :default-active-first-option="false"
-              :show-arrow="false"
               :not-found-content="organizationLoading ? undefined : null"
               @search="handleSearchOrganization"
               allowClear

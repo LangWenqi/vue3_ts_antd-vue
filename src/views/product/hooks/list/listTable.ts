@@ -36,6 +36,7 @@ export const useListTableColumns = () => {
     {
       title: '操作',
       key: 'control',
+      width: 120,
       slots: { customRender: 'control' }
     }
   ]);
@@ -94,4 +95,3 @@ export const useListData = () => {
     changePage
   }
 }
-

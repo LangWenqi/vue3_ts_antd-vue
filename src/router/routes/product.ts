@@ -15,6 +15,20 @@ export const getProductRoutes = (res?: any): Array<RouteRecordRaw> => {
           res
         })
       }
+    },
+    {
+      path: '/product/detail',
+      name: 'ProductDetail',
+      components: {
+        default: () => import(/* webpackChunkName: "Product" */ '@/views/product/detail.vue')
+      },
+      meta: {
+      },
+      props: {
+        default: () => ({
+          res
+        })
+      }
     }
   ];
 }

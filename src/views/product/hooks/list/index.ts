@@ -1,4 +1,4 @@
-import {inject, provide, toRefs, watch } from 'vue';
+import { inject, provide, toRefs, watch } from 'vue';
 import { useListParams } from './searchForm';
 import { useListData, useListTableColumns } from './listTable';
 
@@ -58,7 +58,5 @@ export const useInjectProductListData = () => {
 export const useProvideProductListData = () => {
   const productListData = useProductList()
   provide(productListSymbol, productListData);
-  return {
-    productListData
-  }
+  return productListData;
 }

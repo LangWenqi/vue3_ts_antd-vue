@@ -1,6 +1,6 @@
 import { ref, watchEffect } from 'vue';
 import { getSearchUsers, getSearchOrganization } from '@/apis/common';
-import { I_Organization, I_User } from '@/apis/common/types';
+import { I_Organization, I_User } from '@/config/types/common';
 export interface I_searchUsersMap {
   [key: string]: string;
 }
@@ -95,7 +95,7 @@ export const useSearchOrganization = (delay?: number) => {
     const data: I_searchOrganizationMap = await getSearchOrganization({ name }) as I_searchOrganizationMap;
     organizationLoading.value = false;
     handleSearchOrganizationDataMap(data);
-    handleSearchOrganizationDataList(Object.keys(data).map((id: string) => ({ id, name:data[id] })));
+    handleSearchOrganizationDataList(Object.keys(data).map((id: string) => ({ id, name: data[id] })));
   }
 
   watchEffect((onInvalidate) => {

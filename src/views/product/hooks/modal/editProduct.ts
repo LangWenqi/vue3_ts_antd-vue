@@ -15,7 +15,8 @@ export const useEditProductVisible = () => {
     product_admin: [],
     product_id: undefined,
     adminList: [],
-    organizationList: []
+    organizationList: [],
+    description: ''
   })
 
   const handleEditProductData = (data: I_EditProductData) => {

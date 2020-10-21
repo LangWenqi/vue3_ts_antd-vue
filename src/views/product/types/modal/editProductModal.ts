@@ -1,4 +1,4 @@
-import { I_Organization, I_User } from '@/apis/common/types';
+import { I_Organization, I_User } from '@/config/types/common';
 
 export interface I_EditProductParams {
   icon: string;
@@ -6,6 +6,7 @@ export interface I_EditProductParams {
   product_admin: string[];
   product_id?: number
   organization: string | undefined;
+  description: string;
 }
 
 export interface I_EditProductData extends I_EditProductParams{

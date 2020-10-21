@@ -1,12 +1,3 @@
-export interface I_Organization {
-  name: string;
-  id: string
-}
-
-export interface I_User {
-  username: string;
-  nickname: string
-}
 export interface I_GetSearchUsers {
   name: string;
 }

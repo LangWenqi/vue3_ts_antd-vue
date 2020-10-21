@@ -1,4 +1,4 @@
-import { I_Organization } from '@/apis/common/types';
+import { I_Organization } from '@/config/types/common';
 export interface I_GetProductList extends I_GetProductList_Params {
   curpage: number;
   perpage: number;
@@ -20,3 +20,6 @@ export interface I_EditProduct_Params {
   product_id?: number
 }
 
+export interface I_GetProductDetail_params {
+  product_id: number
+}

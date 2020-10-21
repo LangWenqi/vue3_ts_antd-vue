@@ -6,13 +6,13 @@
       <span class="font-18 font-weight">产品列表</span>
       <a-button type="primary" @click="toProductAdd"><PlusOutlined />申请创建产品</a-button>    
     </div>
-    <list-table/>
+    <list-table ref="listTable"/>
   </div>
 </template>
 
 <script lang="ts">
 
-import { defineComponent } from 'vue';
+import { defineComponent, DefineComponent, ref } from 'vue';
 import searchForm from './components/list/searchForm.vue';
 import listTable from './components/list/listTable.vue';
 import { useProvideProductListData } from './hooks/list';
@@ -28,10 +28,17 @@ export default defineComponent({
   setup () {
     useProvideProductListData();
 
+    const listTable = ref<DefineComponent | null>(null);
+
     const toProductAdd = () => {
+      const table = listTable.value as DefineComponent;
+      if (table && table.handleEditProductModal) {
+        table.handleEditProductModal(true);
+      }
     }
 
     return {
+      listTable,
       toProductAdd
     }
   }

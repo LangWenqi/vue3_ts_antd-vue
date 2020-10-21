@@ -47,16 +47,18 @@
         </div>
       </template>
       <template v-slot:control="{ record }">
-        <div class="ant-btn-no-padding-left" :style="{minWidth: minWidth}">
+        <div class="ant-btn-no-padding" :style="{minWidth: minWidth}">
           <a-button type="link" v-if="isShowApply(record)" @click="handleApplyProductModal(true, record)">申请权限</a-button>
           <a-button type="link" v-if="isShowEdit(record)" @click="handleEditProductModal(true, record)">编辑</a-button>
+          <a-divider type="vertical" v-if="isShowDelete(record)"/>
           <a-button type="link" v-if="isShowDelete(record)">删除</a-button>
-          <a-button type="link" v-if="isShowDetail(record)">详情</a-button>
+          <a-divider type="vertical" v-if="isShowDetail(record)"/>
+          <a-button type="link" v-if="isShowDetail(record)" @click="toDetail(record.id)">详情</a-button>
         </div>
       </template>
     </a-table>
-    <apply-product-modal v-if="applyProductVisible" :modal-data="applyProductData" v-model:visible="applyProductVisible"></apply-product-modal>
-    <edit-product-modal v-if="editProductVisible" :modal-data="editProductData" v-model:visible="editProductVisible"></edit-product-modal>
+    <apply-product-modal v-if="applyProductVisible" @refresh="resetProductList" :modal-data="applyProductData" v-model:visible="applyProductVisible"></apply-product-modal>
+    <edit-product-modal v-if="editProductVisible" @refresh="resetProductList" :modal-data="editProductData" v-model:visible="editProductVisible"></edit-product-modal>
   </div>
 </template>
 
@@ -68,9 +70,10 @@ import { useApplyProductVisible } from '../../hooks/modal/applyProduct';
 import { useEditProductVisible } from '../../hooks/modal/editProduct';
 import { mapProductStatus } from '@/config/maps/common';
 import { I_ProductItem } from '../../types/list/listTable';
-import { I_User } from '@/apis/common/types';
+import { I_User } from '@/config/types/common';
 import applyProductModal from '../modal/applyProductModal.vue';
 import editProductModal from '../modal/editProductModel.vue';
+import { useRouter } from 'vue-router';
 
 const minWidth = '80px';
 
@@ -82,7 +85,7 @@ export default defineComponent({
   },
   setup () {
 
-    const { productListData } = useInjectProductListData();
+    const { productListData, productCommonData } = useInjectProductListData();
 
     const { 
       curpage,
@@ -92,8 +95,10 @@ export default defineComponent({
       columns,
       productList,
       changePage
-    } = productListData; 
+    } = productListData;
 
+    const { resetProductList } = productCommonData;
+    
     const getStatus = (record: I_ProductItem) => {
       return {
         color: mapProductStatus[record.status]?.color || '',
@@ -125,7 +130,7 @@ export default defineComponent({
     const isShowApply = (record: I_ProductItem) => (record.privilege !== -1 && record.privilege === 0);
     const isShowEdit = (record: I_ProductItem) => (record.privilege === 1);
     const isShowDelete = (record: I_ProductItem) => (record.status === -1 && record.privilege === 1);
-    const isShowDetail = (record: I_ProductItem) => (record.status === -1 && (record.privilege === 1 || record.privilege === 2));
+    const isShowDetail = (record: I_ProductItem) => (record.privilege === 1 || record.privilege === 2);
 
     const {
       applyProductVisible,
@@ -151,19 +156,32 @@ export default defineComponent({
       handleEditProductData
     } = useEditProductVisible();
 
-    const handleEditProductModal = (visible: boolean, record: I_ProductItem) => {
-      handleEditProductData({
-        product_id: record.id,
-        icon: record.icon,
-        name: record.name,
-        organization: record.organization?.id,
-        product_admin: getAdminIds(record),
-        adminList: getAdminArr(record),
-        organizationList: getOrganizations(record)
-      });
+    const handleEditProductModal = (visible: boolean, record?: I_ProductItem) => {
+      const data = {
+        product_id: record ? record.id : undefined,
+        icon: record ? record.icon : '',
+        name: record ? record.name : '',
+        organization: record ? record.organization?.id : undefined,
+        product_admin: record ? getAdminIds(record) : [],
+        adminList: record ? getAdminArr(record) : [],
+        organizationList: record ? getOrganizations(record) : [],
+        description: (record && record.description) || ''
+      }
+      handleEditProductData(data);
       handleEditProductVisible(visible);
     }
 
+    const router = useRouter();
+
+    const toDetail = (id: number) => {
+      const routeData = router.resolve({
+        path: '/product/detail',
+        query: {
+          id
+        }
+      });
+      window.open(routeData.href);
+    }
     return {
       minWidth,
       curpage,
@@ -187,7 +205,9 @@ export default defineComponent({
       editProductData,
       handleEditProductVisible,
       handleEditProductData,
-      handleEditProductModal
+      handleEditProductModal,
+      resetProductList,
+      toDetail
     }
   }
 })
