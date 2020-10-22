@@ -66,8 +66,8 @@
 
 import { defineComponent } from 'vue';
 import { useInjectProductListData } from '../../hooks/list';
-import { useApplyProductVisible } from '../../hooks/modal/applyProduct';
-import { useEditProductVisible } from '../../hooks/modal/editProduct';
+import { useListApplyProduct } from '../../hooks/list/applyProductModal';
+import { useListEditProduct } from '../../hooks/list//editProductModal';
 import { mapProductStatus } from '@/config/maps/common';
 import { I_ProductItem } from '../../types/list/listTable';
 import { I_User } from '@/config/types/common';
@@ -78,12 +78,14 @@ import { useRouter } from 'vue-router';
 const minWidth = '80px';
 
 export default defineComponent({
-  name: 'ListTable',
+  name: 'ProductListTable',
   components: {
     applyProductModal,
     editProductModal
   },
   setup () {
+    
+    const router = useRouter();
 
     const { productListData, productCommonData } = useInjectProductListData();
 
@@ -98,31 +100,32 @@ export default defineComponent({
     } = productListData;
 
     const { resetProductList } = productCommonData;
-    
+
+    const {
+      handleApplyProductModal,
+      applyProductVisible,
+      applyProductData
+    } = useListApplyProduct();
+
+    const {
+      editProductVisible,
+      editProductData,
+      getAdminArr,
+      handleEditProductModal
+    } = useListEditProduct();
+        
     const getStatus = (record: I_ProductItem) => {
       return {
         color: mapProductStatus[record.status]?.color || '',
         name: mapProductStatus[record.status]?.name || ''
       }
     }
-
-    const getAdminArr = (record: I_ProductItem) => {
-      return record.role_list && Array.isArray(record.role_list.product_admin) ? record.role_list.product_admin : [];
-    }
-
+    
     const getAdmins = (record: I_ProductItem) => {
       const arr = getAdminArr(record);
       return arr.length > 0 ? arr.map((item: I_User) => item.nickname).join('、') : '-'
     }
 
-    const getAdminIds = (record: I_ProductItem) => {
-      const arr = getAdminArr(record);
-      return arr.length > 0 ? arr.map((item: I_User) => item.username) : [];
-    }
-
-    const getOrganizations = (record: I_ProductItem) => {
-      return record.organization && record.organization.id ? [record.organization] : [];
-    }
     const getCreateAt = (record: I_ProductItem) => {
       return record.created_at?.split(' ')[0] || '-';
     }
@@ -131,47 +134,6 @@ export default defineComponent({
     const isShowEdit = (record: I_ProductItem) => (record.privilege === 1);
     const isShowDelete = (record: I_ProductItem) => (record.status === -1 && record.privilege === 1);
     const isShowDetail = (record: I_ProductItem) => (record.privilege === 1 || record.privilege === 2);
-
-    const {
-      applyProductVisible,
-      applyProductData,
-      handleApplyProductVisible,
-      handleApplyProductData
-    } = useApplyProductVisible();
-
-    const handleApplyProductModal = (visible: boolean, record: I_ProductItem) => {
-      handleApplyProductData({
-        pro_id: record.id,
-        role_id: undefined,
-        product_name: record.name,
-        apply_desc: ''
-      });
-      handleApplyProductVisible(visible);
-    }
-    
-    const {
-      editProductVisible,
-      editProductData,
-      handleEditProductVisible,
-      handleEditProductData
-    } = useEditProductVisible();
-
-    const handleEditProductModal = (visible: boolean, record?: I_ProductItem) => {
-      const data = {
-        product_id: record ? record.id : undefined,
-        icon: record ? record.icon : '',
-        name: record ? record.name : '',
-        organization: record ? record.organization?.id : undefined,
-        product_admin: record ? getAdminIds(record) : [],
-        adminList: record ? getAdminArr(record) : [],
-        organizationList: record ? getOrganizations(record) : [],
-        description: (record && record.description) || ''
-      }
-      handleEditProductData(data);
-      handleEditProductVisible(visible);
-    }
-
-    const router = useRouter();
 
     const toDetail = (id: number) => {
       const routeData = router.resolve({
@@ -203,8 +165,6 @@ export default defineComponent({
       applyProductData,
       editProductVisible,
       editProductData,
-      handleEditProductVisible,
-      handleEditProductData,
       handleEditProductModal,
       resetProductList,
       toDetail

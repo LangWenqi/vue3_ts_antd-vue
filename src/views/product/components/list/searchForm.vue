@@ -110,7 +110,7 @@ import { disabledNextDate } from '@/utils/time';
 import { inlineLabelCol, inlineWrapperCol, singleLabelCol, singleWrapperCol } from '@/config/maps/layout';
 
 export default defineComponent({
-  name: 'SearchForm',
+  name: 'ProductSearchForm',
   components: {
     DownOutlined,
     UpOutlined

@@ -328,3 +328,6 @@ textarea {
 .upload-img {
   @include imgBox(80px, 80px, cover);
 }
+.vertical-align-middle {
+  vertical-align: middle;
+}

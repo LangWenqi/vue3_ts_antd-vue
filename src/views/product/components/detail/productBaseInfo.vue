@@ -5,7 +5,7 @@
       shape: 'square'
     }" :loading="loading" :paragraph="{ rows: 2 }">
       <div flex>
-        <a-avatar flex-box="0" :size="avatarSize" shape="square" :src="productInfo.icon"></a-avatar>
+        <a-avatar class="border-radius-4" flex-box="0" :size="avatarSize" shape="square" :src="productInfo.icon"></a-avatar>
         <div flex-box="1" class="margin-left-24">
           <div flex="cross:center">
             <span class="font-18 font-weight">{{productInfo.name}}</span>
@@ -27,7 +27,7 @@
             <a-divider type="vertical"/>
             {{created_at}}
           </div>
-          <div>
+          <div class="ant-btn-no-padding">
             product_id：
             {{productInfo.id}}
             <a-button type="link" @click="handleCopy(productInfo.id)">复制</a-button>
