@@ -203,7 +203,7 @@ export const payModelMap = {
 export const accountTypeList = [
   {
     id: 'pt33',
-    name: '边锋33体系（BF33）'
+    name: 'xx33体系（BF33）'
   },
   {
     id: 'other',
@@ -211,13 +211,15 @@ export const accountTypeList = [
   }
 ]
 export const accountMap = {
-  pt33: '边锋33体系（BF33）',
+  pt33: 'xx33体系（BF33）',
   other: '其它'
 }
 
+export const HELP_URL = 'http://eis.xx.com/workplatform/staticcreative/office?id=24557&isPath=false&token=DqtDfvsJ';
+
 export const areaIdDes = '账号[areaid] : 是用户与系统建立的一种联系，是用户从现实映射到虚拟系统中的唯一识别标记，账号体系则是系统下所有账号的集合。';
 
-export const groupIdDes = '部署服务组[groupid]: 部署服务组是边锋33体系下，用于聚合管理cp内容(子游戏 [gameid])的维度标识。一个服务组下可挂载多个账号体系的cp内容（子游戏 [gameid]）。';
+export const groupIdDes = '部署服务组[groupid]: 部署服务组是xx33体系下，用于聚合管理cp内容(子游戏 [gameid])的维度标识。一个服务组下可挂载多个账号体系的cp内容（子游戏 [gameid]）。';
 
 export const appIdDes = '应用是 同一款产品下，拥有同一套上架资质（合规情况下，也可能存在无资质）的所有包集合，也是用户下载时看到的包名称。'
 

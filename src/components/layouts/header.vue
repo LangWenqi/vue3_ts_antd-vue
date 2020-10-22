@@ -25,7 +25,7 @@
             </template>
           </a-dropdown>
         </span>
-        <a-button className='margin-left-12' target='_blank' :href="helpUrl" type="link">
+        <a-button className='margin-left-12' target='_blank' :href="HELP_URL" type="link">
           使用说明
           <QuestionCircleOutlined />
         </a-button>
@@ -40,7 +40,7 @@ import { defineComponent, computed, ref } from 'vue';
 import { MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined, DownOutlined, QuestionCircleOutlined } from '@ant-design/icons-vue';
 import { useInject } from '@/inject';
 import { commonSymbol } from '@/inject/constants';
-import { HELP_URL } from '@/utils/variable';
+import { HELP_URL } from '@/config/maps/common';
 import { handleLogout } from '@/apis/common';
 
 export default defineComponent({
@@ -56,8 +56,6 @@ export default defineComponent({
 
     const avatarSize = ref(40);
 
-    const helpUrl = ref(HELP_URL);
-
     const { commonState, handleCollapsed } = useInject(commonSymbol);
     const collapsed = computed(() => (commonState.collapsed));
 
@@ -71,7 +69,7 @@ export default defineComponent({
       avatarSize,
       avatarUrl,
       name,
-      helpUrl,
+      HELP_URL,
       handleLogout
     }
   }
